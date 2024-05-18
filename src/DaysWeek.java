@@ -1,6 +1,9 @@
 
     import java.time.DayOfWeek;
     import java.util.*;
+    import java.util.TreeSet;
+    import java.util.Comparator;
+    import java.util.Objects;
 
     public class weekdays {
         public enum Weekday {
@@ -82,6 +85,94 @@
             for (int counter = 0; counter < hours.length; counter++)
                 System.out.print("Ore somn/munca/relaxare " +day+ ": " +hours[counter]);
 
+        }
+    }
+
+
+
+    public static class Activity {
+
+        public long startHour;
+        public long endHour;
+
+        public static final int MAX_SIZE = 10;
+
+        public static TreeSet<Activity> activities = new TreeSet<>(new Comparator<Activity>() {
+            @Override
+            public int compare(Activity o1, Activity o2) {
+                return Long.compare(o1.startHour, o2.startHour);
+            }
+        });
+
+        public boolean intersect(Activity activity) {
+            return (activity.startHour >= this.startHour && activity.startHour < this.endHour)
+                    || (this.startHour >= activity.startHour && this.startHour < activity.endHour);
+        }
+
+        @Override
+        public String toString() {
+            return "start: " + startHour + ", end: " + endHour;
+        }
+
+        @Override
+        public int hashCode(){
+            return Objects.hash(startHour, endHour);
+        }
+
+        @Override
+        public boolean equals(Object object) {
+            if (this == object) return true;
+
+            Activity other = (Activity) object;
+
+            return (startHour == other.startHour) && (endHour == other.endHour);
+        }
+
+        public static void addActivity(Activity aActivity)
+        {
+            if (activities.size() >= MAX_SIZE) {
+                System.out.println("The activities database is full");
+                return;
+            }
+
+            for (Activity a : activities) {
+                if (a.intersect(aActivity)) {
+                    System.out.println(String.format("Activity", a, aActivity));
+                    return;
+                }
+            }
+            activities.add(aActivity);
+        }
+
+
+        public static void main(String[] args) {
+
+            Activity a1 = new Activity();
+
+            a1.startHour = 00;
+            a1.endHour = 06;
+
+            Activity b1 = new Activity();
+
+            b1.startHour =06;
+            b1.endHour = 12;
+
+            Activity b2 = new Activity();
+
+            b2.startHour = 12;
+            b2.endHour = 18;
+
+            Activity b3 = new Activity();
+            b3.startHour = 18;
+            b3.endHour = 24;
+
+            addActivity(a1);
+            addActivity(b1);
+            addActivity(b1);
+            addActivity(b2);
+            addActivity(b3);
+
+            System.out.println(activities);
         }
     }
 
